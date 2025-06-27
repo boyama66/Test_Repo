@@ -1,0 +1,181 @@
+table 'Extended Permission - All'
+	lineageTag: 7ad4d212-7372-4c11-bd01-1f80acff2f0c
+
+	measure 'No of user who can view proposals' = DISTINCTCOUNT('Extended Permission - All'[Person ID])
+		formatString: 0
+		lineageTag: 378849b9-0a45-44d9-9233-7655cfce8f6a
+
+		changedProperty = IsHidden
+
+	measure 'No of campus user who can view proposal' = CALCULATE(DISTINCTCOUNT('Extended Permission - All'[Person ID]), 'Extended Permission - All'[Central vs Campus] = "Campus")
+		formatString: 0
+		lineageTag: ee581de0-54e7-4981-9729-8956c2de1b79
+
+		changedProperty = IsHidden
+
+	measure 'No of user who can view proposal package' = CALCULATE(DISTINCTCOUNT('Extended Permission - All'[Person ID]), 'Extended Permission - All'[Access to Proposal Package] = "Yes")
+		formatString: 0
+		lineageTag: 4b837545-2726-47a6-87d3-c5650c70be32
+
+		changedProperty = IsHidden
+
+	measure 'No of campus user who can view proposal package' = CALCULATE(DISTINCTCOUNT('Extended Permission - All'[Person ID]), 'Extended Permission - All'[Access to Proposal Package] = "Yes", 'Extended Permission - All'[Central vs Campus]="Campus")
+		formatString: 0
+		lineageTag: c76a7d33-4e7d-4190-9c59-5faa6caa03a0
+
+		changedProperty = IsHidden
+
+	column 'Person ID'
+		dataType: string
+		lineageTag: ea8ff9a3-df7e-4c07-8f89-1a9e055bff29
+		summarizeBy: none
+		sourceColumn: Person ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit Type'
+		dataType: string
+		lineageTag: 1c9041f5-8462-4aef-979d-3045ac6772bd
+		summarizeBy: none
+		sourceColumn: Unit Type
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit Code'
+		dataType: string
+		lineageTag: 92e32ad9-d0be-4fce-9bfd-9765ed93d5cd
+		summarizeBy: none
+		sourceColumn: Unit Code
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Resource
+		dataType: string
+		lineageTag: 2024dea5-ad3a-4171-b576-33577bbfac50
+		summarizeBy: none
+		sourceColumn: Resource
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit Name'
+		dataType: string
+		lineageTag: 658dd630-1da5-4746-bf33-5b3f39011432
+		summarizeBy: none
+		sourceColumn: Unit Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Name'
+		dataType: string
+		lineageTag: ea000332-5718-4903-8d28-b0027bf101de
+		summarizeBy: none
+		sourceColumn: Emp Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Home Dept Code'
+		dataType: string
+		lineageTag: c4e99deb-74e9-463c-be12-5386ce666fa4
+		summarizeBy: none
+		sourceColumn: Emp Home Dept Code
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Status'
+		dataType: string
+		lineageTag: fc522608-3378-4e85-a04d-877779b7762a
+		summarizeBy: none
+		sourceColumn: Emp Status
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Title'
+		dataType: string
+		lineageTag: 9236d6e7-9b31-4174-858b-00ac08078dd9
+		summarizeBy: none
+		sourceColumn: Emp Title
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Home Dept Name'
+		dataType: string
+		lineageTag: 392417cc-8383-4348-bade-0bf9d56dbeeb
+		summarizeBy: none
+		sourceColumn: Emp Home Dept Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Access to Proposal Package'
+		dataType: string
+		lineageTag: 2c294856-b184-405b-968f-2f743f17445e
+		summarizeBy: none
+		sourceColumn: Access to Proposal Package
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Central vs Campus'
+		dataType: string
+		lineageTag: aa7e3ddf-314c-4765-bedd-b209cf1eb763
+		summarizeBy: none
+		sourceColumn: Central vs Campus
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Extended Permission - All-21bea283-b642-4056-91b5-a7b4252e9993' = m
+		mode: import
+		queryGroup: 'For Sure Used'
+		source =
+				let
+				    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="
+				        SELECT UserID 'Person ID', Resource, Type 'Unit Type', Value 'Unit Code'
+				        FROM ExtendedPermission
+				        WHERE Resource like 'ORC_Proposal%'"
+				    ]),
+				    #"Replaced Value" = Table.ReplaceValue(Source,"_"," ",Replacer.ReplaceText,{"Resource"}),
+				    #"Replaced Value5" = Table.ReplaceValue(#"Replaced Value","Location","Global",Replacer.ReplaceText,{"Unit Type"}),
+				    #"Replaced Value6" = Table.ReplaceValue(#"Replaced Value5","Organizations","Organization",Replacer.ReplaceText,{"Unit Type"}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value6","Proposal","Proposal ",Replacer.ReplaceText,{"Resource"}),
+				    #"Sorted Rows" = Table.Sort(#"Replaced Value1",{{"Unit Type", Order.Ascending}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Sorted Rows", {"Unit Type", "Unit Code"}, #"Org Units", {"Unit Type", "Code"}, "Org Units", JoinKind.LeftOuter),
+				    #"Expanded Org Units" = Table.ExpandTableColumn(#"Merged Queries", "Org Units", {"Name"}, {"Org Units.Name"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded Org Units",{{"Org Units.Name", "Unit Name"}}),
+				    #"Merged Queries1" = Table.NestedJoin(#"Renamed Columns", {"Person ID"}, #"DimPerson - Loc 4 Active & On Leave", {"Person ID"}, "DimPerson - Loc 4 Active & On Leave", JoinKind.LeftOuter),
+				    #"Expanded DimPerson - Loc 4 Active & On Leave" = Table.ExpandTableColumn(#"Merged Queries1", "DimPerson - Loc 4 Active & On Leave", {"Name", "Home Dept", "Emp Status", "Title"}, {"DimPerson - Loc 4 Active & On Leave.Name", "DimPerson - Loc 4 Active & On Leave.Home Dept", "DimPerson - Loc 4 Active & On Leave.Emp Status", "DimPerson - Loc 4 Active & On Leave.Title"}),
+				    #"Merged Queries2" = Table.NestedJoin(#"Expanded DimPerson - Loc 4 Active & On Leave", {"DimPerson - Loc 4 Active & On Leave.Home Dept"}, #"Department - Loc 4 for Home Dept", {"Dept Code"}, "Department - Loc 4 for Home Dept", JoinKind.LeftOuter),
+				    #"Expanded Department - Loc 4 for Home Dept" = Table.ExpandTableColumn(#"Merged Queries2", "Department - Loc 4 for Home Dept", {"Dept Name"}, {"Dept Name"}),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Expanded Department - Loc 4 for Home Dept",{{"DimPerson - Loc 4 Active & On Leave.Title", "Emp Title"}, {"DimPerson - Loc 4 Active & On Leave.Emp Status", "Emp Status"}, {"DimPerson - Loc 4 Active & On Leave.Home Dept", "Emp Home Dept Code"}, {"Dept Name", "Emp Home Dept Name"}, {"DimPerson - Loc 4 Active & On Leave.Name", "Emp Name"}}),
+				    #"Merged Queries3" = Table.NestedJoin(#"Renamed Columns1", {"Person ID"}, #"User - ORC Proposal Viewer", {"Person ID"}, "User - ORC Proposal Viewer", JoinKind.LeftOuter),
+				    #"Expanded User - ORC Proposal Viewer" = Table.ExpandTableColumn(#"Merged Queries3", "User - ORC Proposal Viewer", {"Title Viewer", "Campus User"}, {"Title Viewer", "Campus User"}),
+				    #"Renamed Columns2" = Table.RenameColumns(#"Expanded User - ORC Proposal Viewer",{{"Title Viewer", "Access to Proposal Package"}, {"Campus User", "Central vs Campus"}}),
+				    #"Replaced Value2" = Table.ReplaceValue(#"Renamed Columns2",null,"No",Replacer.ReplaceValue,{"Access to Proposal Package"}),
+				    #"Replaced Value3" = Table.ReplaceValue(#"Replaced Value2","Yes","Campus",Replacer.ReplaceText,{"Central vs Campus"}),
+				    #"Replaced Value4" = Table.ReplaceValue(#"Replaced Value3",null,"Central",Replacer.ReplaceValue,{"Central vs Campus"})
+				in
+				    #"Replaced Value4"
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,254 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.7.0/schema.json",
+  "name": "12352df1cbdbb8f67de9",
+  "position": {
+    "x": 385.72066988985256,
+    "y": 156.43726908025991,
+    "z": 21000,
+    "height": 46.639676113360331,
+    "width": 120.48582995951418,
+    "tabOrder": 20000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Viewers",
+                    "textStyle": {
+                      "fontSize": "14px",
+                      "color": "#ffffff"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "(Results: ",
+                    "textStyle": {
+                      "color": "#ffffff"
+                    }
+                  },
+                  {
+                    "value": {
+                      "propertyIdentifier": {
+                        "objectName": "values",
+                        "propertyName": "expr"
+                      },
+                      "selector": {
+                        "id": "No of Record - Non Loc 4 - Access to Proposal Package"
+                      }
+                    },
+                    "textStyle": {
+                      "color": "#ffffff"
+                    }
+                  },
+                  {
+                    "value": ")",
+                    "textStyle": {
+                      "color": "#ffffff"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "expr": {
+              "expr": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "Subquery": {
+                          "Query": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "e",
+                                "Entity": "Extended Permission - Non-Loc 4",
+                                "Type": 0
+                              }
+                            ],
+                            "Select": [
+                              {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Source": "e"
+                                    }
+                                  },
+                                  "Property": "No of Record - Proposal Data"
+                                },
+                                "Name": "Extended Permission - Non-Loc 4.No of Record"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "Property": "Extended Permission - Non-Loc 4.No of Record"
+                    }
+                  },
+                  "Function": 3
+                },
+                "Annotations": {
+                  "NaturalLanguage": {
+                    "version": 1,
+                    "kind": "NaturalLanguage",
+                    "annotation": {
+                      "name": "No of Record",
+                      "utterance": "No of Record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "No of Record"
+          }
+        },
+        {
+          "properties": {
+            "expr": {
+              "expr": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "Subquery": {
+                          "Query": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "e",
+                                "Entity": "Extended Permission - Non-Loc 4",
+                                "Type": 0
+                              }
+                            ],
+                            "Select": [
+                              {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Source": "e"
+                                    }
+                                  },
+                                  "Property": "No of users - Proposal Data"
+                                },
+                                "Name": "Extended Permission - Non-Loc 4.No of users"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "Property": "Extended Permission - Non-Loc 4.No of users"
+                    }
+                  },
+                  "Function": 3
+                },
+                "Annotations": {
+                  "NaturalLanguage": {
+                    "version": 1,
+                    "kind": "NaturalLanguage",
+                    "annotation": {
+                      "name": "No of users",
+                      "utterance": "no of users"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "No of users"
+          }
+        },
+        {
+          "properties": {
+            "expr": {
+              "expr": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "Subquery": {
+                          "Query": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "e",
+                                "Entity": "Extended Permission - Non-Loc 4",
+                                "Type": 0
+                              }
+                            ],
+                            "Select": [
+                              {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Source": "e"
+                                    }
+                                  },
+                                  "Property": "No of Records - Proposal Package"
+                                },
+                                "Name": "Extended Permission - Non-Loc 4.No of Records - Proposal Package"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "Property": "Extended Permission - Non-Loc 4.No of Records - Proposal Package"
+                    }
+                  },
+                  "Function": 3
+                },
+                "Annotations": {
+                  "NaturalLanguage": {
+                    "version": 1,
+                    "kind": "NaturalLanguage",
+                    "annotation": {
+                      "name": "No of Record - Non Loc 4 - Access to Proposal Package",
+                      "utterance": "no of records - proposal package"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "No of Record - Non Loc 4 - Access to Proposal Package"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

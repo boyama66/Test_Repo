@@ -1,0 +1,435 @@
+expression 'Group Members - All' =
+		let
+		    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization"),
+		    dbo_GroupMembers = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="SELECT GroupID 'Group ID', Person_ID 'Person ID' FROM GroupMembers"])
+		in
+		    dbo_GroupMembers
+	lineageTag: 6249ed04-b4a2-4918-91fa-ba5e97cb7caf
+	queryGroup: References
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'User - ORC Proposal Viewer' = ```
+		let
+		    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="
+		    SELECT t1.Person_ID 'Person ID', t2.[Title Viewer], t3.[Campus User] FROM 
+		    (
+		        SELECT 
+		            a1.Person_ID, 
+		            Name 'Permission Name', 
+		            first_name, 
+		            last_name, 
+		            emp_status,
+					home_dept_code
+		        FROM
+		        (
+		            SELECT 
+		                r._id as RoleId, 
+		                r.Name as RoleName, 
+		                pr.Person_ID  
+		            FROM [dbo].Role r
+		            left join [dbo].Personrole pr on r._id = pr.Roleid
+		
+		            UNION
+		
+		            SELECT  
+		                gr.Roleid, 
+		                r.name as RoleName,
+		                gm.person_ID  
+		            FROM [dbo].[Groups] g
+		            LEFT JOIN [dbo].[GroupRoles] gr on g._id = gr.GroupId
+		            LEFT JOIN [dbo].[GroupMembers] gm on g._id = gm.GroupId
+		            JOIN [dbo].Role r on gr.RoleId = r._id
+		        ) a1
+		        LEFT JOIN [dbo].RolePermission rp on rp.RoleId = a1.RoleId
+		        LEFT JOIN [dbo].permission p on rp.PermissionId = p._id
+		        LEFT JOIN import.employee e on e.Person_Id=a1.Person_Id
+		        WHERE 
+		            p.Name LIKE 'ORC_ProposalTools%' AND
+		            emp_status in ('A','N','P') --Active, Leave w/o Pay, Leave w/ Pay
+		    ) t1
+		
+		    LEFT JOIN
+		
+		    (
+		        SELECT 
+		            'Yes' 'Title Viewer',
+		            a2.Person_ID
+		        FROM
+		            (
+		                SELECT 
+		                    r._id as RoleId, 
+		                    r.Name as RoleName, 
+		                    pr.Person_ID  
+		                FROM [dbo].Role r
+		                LEFT JOIN [dbo].Personrole pr on r._id = pr.Roleid
+		
+		                UNION
+		
+		                SELECT  
+		                    gr.Roleid, 
+		                    r.name as RoleName,
+		                    gm.person_ID  
+		                FROM [dbo].[Groups] g
+		                LEFT JOIN [dbo].[GroupRoles] gr on g._id = gr.GroupId
+		                LEFT JOIN [dbo].[GroupMembers] gm on g._id = gm.GroupId
+		                JOIN [dbo].Role r on gr.RoleId = r._id
+		            ) a2
+		        LEFT JOIN [dbo].RolePermission rp on rp.RoleId = a2.RoleId
+		        LEFT JOIN [dbo].permission p on rp.PermissionId = p._id
+		        LEFT JOIN import.employee e on e.Person_Id=a2.Person_Id
+		        WHERE 
+		            p.Name like 'ORC_ProposalTitle%' AND
+		            emp_status in ('A','N','P') --Active, Leave w/o Pay, Leave w/ Pay
+		
+		    ) t2 ON t1.Person_ID = t2.Person_ID
+		
+			LEFT JOIN
+		
+			(
+				SELECT dept_code, 'Yes' 'Campus User'
+				FROM import.Department
+				WHERE org_code != '3100' AND loc_code = '4'
+		
+			) t3 ON t1.home_dept_code = t3.dept_code
+		
+		"])
+		in
+		    Source
+		
+		
+		/*
+		let
+		    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="
+		    SELECT t1.Person_ID 'Person ID', t2.[Title Viewer] FROM 
+		    (
+		        SELECT 
+		            a1.Person_ID, 
+		            Name 'Permission Name', 
+		            first_name, 
+		            last_name, 
+		            emp_status
+		        FROM
+		        (
+		            SELECT 
+		                r._id as RoleId, 
+		                r.Name as RoleName, 
+		                pr.Person_ID  
+		            FROM [dbo].Role r
+		            left join [dbo].Personrole pr on r._id = pr.Roleid
+		
+		            UNION
+		
+		            SELECT  
+		                gr.Roleid, 
+		                r.name as RoleName,
+		                gm.person_ID  
+		            FROM [dbo].[Groups] g
+		            LEFT JOIN [dbo].[GroupRoles] gr on g._id = gr.GroupId
+		            LEFT JOIN [dbo].[GroupMembers] gm on g._id = gm.GroupId
+		            JOIN [dbo].Role r on gr.RoleId = r._id
+		        ) a1
+		        LEFT JOIN [dbo].RolePermission rp on rp.RoleId = a1.RoleId
+		        LEFT JOIN [dbo].permission p on rp.PermissionId = p._id
+		        LEFT JOIN import.employee e on e.Person_Id=a1.Person_Id
+		        WHERE 
+		            p.Name LIKE 'ORC_ProposalTools%' AND
+		            emp_status in ('A','N','P') --Active, Leave w/o Pay, Leave w/ Pay
+		    ) t1
+		
+		    LEFT JOIN
+		
+		    (
+		        SELECT 
+		            'Yes' 'Title Viewer',
+		            a2.Person_ID
+		        FROM
+		            (
+		                SELECT 
+		                    r._id as RoleId, 
+		                    r.Name as RoleName, 
+		                    pr.Person_ID  
+		                FROM [dbo].Role r
+		                LEFT JOIN [dbo].Personrole pr on r._id = pr.Roleid
+		
+		                UNION
+		
+		                SELECT  
+		                    gr.Roleid, 
+		                    r.name as RoleName,
+		                    gm.person_ID  
+		                FROM [dbo].[Groups] g
+		                LEFT JOIN [dbo].[GroupRoles] gr on g._id = gr.GroupId
+		                LEFT JOIN [dbo].[GroupMembers] gm on g._id = gm.GroupId
+		                JOIN [dbo].Role r on gr.RoleId = r._id
+		            ) a2
+		        LEFT JOIN [dbo].RolePermission rp on rp.RoleId = a2.RoleId
+		        LEFT JOIN [dbo].permission p on rp.PermissionId = p._id
+		        LEFT JOIN import.employee e on e.Person_Id=a2.Person_Id
+		        WHERE 
+		            p.Name like 'ORC_ProposalTitle%' AND
+		            emp_status in ('A','N','P') --Active, Leave w/o Pay, Leave w/ Pay
+		
+		    ) t2
+		
+		    ON t1.Person_ID = t2.Person_ID
+		
+		"])
+		in
+		    Source
+		*/
+		```
+	lineageTag: f4f7b24a-a073-46c3-962e-b99c7bbc0a0d
+	queryGroup: 'For Sure Used'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'All Person - ORC Proposal Viewer - Tools' =
+		let
+		    Source = #"All Person - ORC Proposal Viewer",
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Role ID] = "439e109a-e4c6-4379-9303-80bdcdfd96f4")),
+		    #"Removed Columns" = Table.RemoveColumns(#"Filtered Rows",{"Granted By"}),
+		    #"Removed Duplicates" = Table.Distinct(#"Removed Columns")
+		in
+		    #"Removed Duplicates"
+	lineageTag: 2380f490-b5ba-4d8c-a81a-e1952ed7604b
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'All Person - ORC Proposal Viewer - Title' =
+		let
+		    Source = #"All Person - ORC Proposal Viewer",
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Role ID] = "a4ac89c9-296f-487b-9eaf-ee58b3f28307")),
+		    #"Removed Columns" = Table.RemoveColumns(#"Filtered Rows",{"Granted By"}),
+		    #"Removed Duplicates" = Table.Distinct(#"Removed Columns")
+		in
+		    #"Removed Duplicates"
+	lineageTag: d18ea949-9abe-4e7e-932f-2ea5ec033d3b
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Org Units' =
+		let
+		    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="
+		    Select distinct 'Department' 'Unit Type', dept_code 'Code', dept_name 'Name'
+		        FROM import.Department
+		        WHERE loc_code = '4'
+		
+		    UNION
+		
+		    Select distinct 'Subdivision' 'Unit Type', sub_div_code 'Code', sub_div_name 'Name'
+		        FROM import.Department
+		        WHERE loc_code = '4' AND
+		        sub_div_code <> ''
+		
+		    UNION
+		
+		    Select distinct 'Division' 'Unit Type', div_code 'Code', div_name 'Name'
+		        FROM import.Department
+		        WHERE loc_code = '4' AND
+		        div_code <> ''
+		
+		    UNION
+		
+		    Select distinct 'Organizations' 'Unit Type', org_code 'Code', org_name 'Name'
+		        FROM import.Department
+		        WHERE loc_code = '4' AND
+		        org_code <> ''
+		
+		    UNION
+		
+		    Select 'Location' as 'Unit Type', '4' as 'Unit Code', 'UCLA' as 'Name'
+		    "]),
+		    #"Replaced Value" = Table.ReplaceValue(Source,"Location","Global",Replacer.ReplaceText,{"Unit Type"}),
+		    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","Organizations","Organization",Replacer.ReplaceText,{"Unit Type"})
+		in
+		    #"Replaced Value1"
+	lineageTag: 2ca8d61e-c2d6-483a-b96e-40a0accbaa8a
+	queryGroup: 'For Sure Used'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Roles - ORC Proposal Viewer' =
+		/* Find the Roles which have the permission name that contains ORC_Proposal */
+		
+		let
+		    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="
+		        SELECT r._id 'Role ID', r.Name 'Role Name', r.Description 'Role Description'
+		        FROM RolePermission rp
+		        LEFT join Role r on rp.RoleId = r._id
+		        LEFT join Permission p on rp.PermissionId = p._id
+		        WHERE p.Name like 'ORC_Proposal%'"]),
+		    #"Replaced Value" = Table.ReplaceValue(Source,"_"," ",Replacer.ReplaceText,{"Role Name"}),
+		    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","Proposal","Proposal ",Replacer.ReplaceText,{"Role Name"})
+		in
+		    #"Replaced Value1"
+	lineageTag: d0ea856f-8e1a-4144-a5ab-da75eb0a2729
+	queryGroup: References
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Role ID List - ORC Proposal Viewer (ref)' =
+		/*
+		    This is the reference of query "Roles - ORC Proposal Viewer"
+		    Keep the Role ID and convert it to List
+		*/
+		
+		let
+		    Source = #"Roles - ORC Proposal Viewer",
+		    #"Removed Columns" = Table.RemoveColumns(Source,{"Role Name", "Role Description"}),
+		    #"Role ID" = #"Removed Columns"[Role ID]
+		in
+		    #"Role ID"
+	lineageTag: 0fd53a78-258f-4e22-810b-cfd8cd4a7376
+	queryGroup: References
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = List
+
+expression 'All Person - ORC Proposal Viewer' =
+		let
+		    Source = Table.Combine({#"Person Granted by Person - ORC Proposal Viewer", #"Person Granted by Group - ORC Proposal Viewer"})
+		in
+		    Source
+	lineageTag: e8b2d11e-de67-4ca6-959b-4b9be47dee51
+
+	annotation PBI_ResultType = Table
+
+expression 'DimPerson - Loc 4 Active & On Leave' =
+		let
+		    Source = Sql.Database("dbsqlcltora.resadmin.ucla.edu", "ORADW", [Query="SELECT#(lf)#(tab)person_id 'Person ID',#(lf)#(tab)full_name_4 'Name',#(lf)#(tab)home_dept_code 'Home Dept',#(lf)#(tab)emp_status 'Emp Status',#(lf)#(tab)titles 'Title'#(lf)FROM DimPerson#(lf)WHERE#(lf)#(tab)emp_status_code in ('A', 'N', 'P') AND#(lf)#(tab)home_dept_loc_code = '4'"]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each true)
+		in
+		    #"Filtered Rows"
+	lineageTag: 41b35892-261c-4fb0-ba3e-6cf370c26fa5
+	queryGroup: 'For Sure Used'
+
+	annotation PBI_ResultType = Table
+
+expression 'Department - Loc 4 for Home Dept' =
+		let
+		    Source = #"Department - Loc 4 for Extended Permission"
+		in
+		    Source
+	lineageTag: 24a0eba5-4b56-4605-9945-783889cc51de
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Department - Loc 4 for Extended Permission' =
+		let
+		    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="
+		    SELECT
+		        dept_code    'Dept Code',   dept_name    'Dept Name',
+		        org_code     'Org Code',    org_name     'Org Name',
+		        div_code     'Div Code',    div_name     'Div Name',
+		        sub_div_code 'SubDiv Code', sub_div_name 'SubDiv Name'
+		    FROM import.Department
+		    WHERE loc_code = '4'
+		    "])
+		in
+		    Source
+	lineageTag: ec8f9e83-0bd4-4858-bcfb-5479ec796c99
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Groups - ORC Proposal Viewer' = ```
+		/* ---------------------------------------------------------------------------------------------------------
+		   The result is:
+		    The Groups that has XXX Roles and XXX Roles have Permission which its name contains ORC_Proposal
+		
+		    Query here: 
+		    1) Get all the Groups
+		    2) Filtered Role ID by the result of the "Roles - ORC Proposal Viewer" query (Role ID List - ORC Proposal Viewer (ref)
+		------------------------------------------------------------------------------------------------------------*/
+		let
+		    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="SELECT g._id 'Group ID', g.name 'Group Name', g.description 'Group Description', r._id 'Role ID' FROM GroupRoles gr LEFT JOIN Groups g on gr.GroupId = g._id LEFT JOIN Role r on gr.RoleId = r._id ORDER by 'Group Name'"]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each List.Contains(#"Role ID List - ORC Proposal Viewer (ref)", [Role ID]))
+		in
+		    #"Filtered Rows"
+		```
+	lineageTag: 6915dee6-9fb8-47c0-9d10-9fecf5265d87
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Person Granted by Person - ORC Proposal Viewer' =
+		let
+		    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="SELECT Person_ID 'Person ID', RoleID 'Role ID'FROM PersonRole"]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each List.Contains(#"Role ID List - ORC Proposal Viewer (ref)", [Role ID])),
+		    #"Added Custom" = Table.AddColumn(#"Filtered Rows", "Granted By", each "Person"),
+		    #"Filtered Rows1" = Table.SelectRows(#"Added Custom", each true)
+		in
+		    #"Filtered Rows1"
+	lineageTag: 43516798-ccad-498f-8eec-f10785de98e5
+
+	annotation PBI_ResultType = Table
+
+expression 'Person Granted by Group - ORC Proposal Viewer' =
+		let
+		    Source = Table.NestedJoin(#"Groups - ORC Proposal Viewer", {"Group ID"}, #"Group Members - All", {"Group ID"}, "Group Members - All", JoinKind.LeftOuter),
+		    #"Expanded Group Members - All" = Table.ExpandTableColumn(Source, "Group Members - All", {"Person ID"}, {"Group Members - All.Person ID"}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Expanded Group Members - All",{"Role ID", "Group Members - All.Person ID"}),
+		    #"Reordered Columns" = Table.ReorderColumns(#"Removed Other Columns",{"Group Members - All.Person ID", "Role ID"}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Reordered Columns",{{"Group Members - All.Person ID", "Person ID"}}),
+		    #"Added Custom" = Table.AddColumn(#"Renamed Columns", "Granted By", each "Group")
+		in
+		    #"Added Custom"
+	lineageTag: 4c14d76b-7a07-4e67-8a27-8811b5991cc7
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Groups - Title Viewer' = ```
+		let
+		    Source = Sql.Database("dbsqlazprd.database.windows.net", "Authorization", [Query="
+		        SELECT t1.[Group Name], t2.[Title Viewer] FROM
+		        (
+		            SELECT distinct g.name 'Group Name'
+		            FROM GroupRoles gr 
+		            LEFT JOIN Groups g on gr.GroupId = g._id 
+		            LEFT JOIN Role r on gr.RoleId = r._id 
+		            WHERE r.Name like 'ORC_Proposal%'
+		        ) t1
+		
+		        LEFT JOIN
+		
+		        (
+		            SELECT g.name 'Group Name', r.Name, 'Yes' 'Title Viewer'
+		            FROM GroupRoles gr 
+		            LEFT JOIN Groups g on gr.GroupId = g._id 
+		            LEFT JOIN Role r on gr.RoleId = r._id 
+		            WHERE r.Name = 'ORC_ProposalTitle_Viewer'
+		        ) t2
+		
+		        ON t1.[Group Name] = t2.[Group Name]
+		    "]),
+		    #"Replaced Value" = Table.ReplaceValue(Source,null,"No",Replacer.ReplaceValue,{"Title Viewer"})
+		in
+		    #"Replaced Value"
+		```
+	lineageTag: 6a2dadff-0e54-4a58-8e9f-42fc7a3597b5
+	queryGroup: 'Can be deleted'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

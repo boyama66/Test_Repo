@@ -1,0 +1,35 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup References
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'For Sure Used'
+
+	annotation PBI_QueryGroupOrder = 2
+
+queryGroup 'Can be deleted'
+
+	annotation PBI_QueryGroupOrder = 3
+
+annotation PBI_QueryOrder = ["Department - Loc 4 for Home Dept","Department - Loc 4 for Extended Permission","Groups - ORC Proposal Viewer","Person Granted by Person - ORC Proposal Viewer","Person Granted by Group - ORC Proposal Viewer","All Person - ORC Proposal Viewer","Role ID List - ORC Proposal Viewer (ref)","Roles - ORC Proposal Viewer","Group Members - All","DimPerson - Loc 4 Active & On Leave","All Person - ORC Proposal Viewer - Tools","All Person - ORC Proposal Viewer - Title","Groups - Title Viewer","Extended Permission - All","Extended Permission - Loc 4 Only","Extended Permission - Non-Loc 4","Org Units","User - ORC Proposal Viewer","Refresh Time"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBIDesktopVersion = 2.142.928.0 (25.04)+de52df9f0bb74ad93a80d89c52d63fe6d07e0e1b
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table 'Extended Permission - All'
+ref table 'Extended Permission - Loc 4 Only'
+ref table 'Extended Permission - Non-Loc 4'
+ref table 'Refresh Time'
+
+ref cultureInfo en-US
+

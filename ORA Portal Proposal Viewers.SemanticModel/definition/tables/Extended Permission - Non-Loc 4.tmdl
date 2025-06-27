@@ -1,0 +1,151 @@
+table 'Extended Permission - Non-Loc 4'
+	lineageTag: c8e3cd17-9c23-42d8-bb86-cb08d1c6bdd9
+
+	measure 'No of Record - Proposal Data' = COUNTROWS('Extended Permission - Non-Loc 4')
+		formatString: 0
+		lineageTag: 551c7dec-530a-4fa5-971c-2f1075284ff0
+
+	measure 'No of users - Proposal Data' = DISTINCTCOUNT('Extended Permission - Non-Loc 4'[Person ID])
+		formatString: 0
+		lineageTag: ddc922e8-834e-48a4-8bca-bc5244dd50e0
+
+	measure 'No of Users - Proposal Package' = CALCULATE(DISTINCTCOUNT('Extended Permission - Non-Loc 4'[Person ID]), 'Extended Permission - Non-Loc 4'[Access to Proposal Package]="Yes")
+		formatString: 0
+		lineageTag: 8897aa32-f8e1-4360-8da1-a64b7ca456d6
+
+	measure 'No of Records - Proposal Package' = CALCULATE(COUNT('Extended Permission - Non-Loc 4'[Person ID]), 'Extended Permission - Non-Loc 4'[Access to Proposal Package]="Yes")
+		formatString: 0
+		lineageTag: f3983cea-c41f-4d2d-be91-03d0b8575486
+
+	column 'Person ID'
+		dataType: string
+		lineageTag: a7ecf5fe-a873-4611-9044-060666306cf3
+		summarizeBy: none
+		sourceColumn: Person ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Resource
+		dataType: string
+		lineageTag: 1a11df1a-3f70-47ef-b187-a7b30416e0f6
+		summarizeBy: none
+		sourceColumn: Resource
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit Type'
+		dataType: string
+		lineageTag: e7183b4b-1a71-4bf7-ae12-172dd0bf7cc0
+		summarizeBy: none
+		sourceColumn: Unit Type
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit Code'
+		dataType: string
+		lineageTag: 10c751d9-d86e-4653-aad1-e0f4cce20878
+		summarizeBy: none
+		sourceColumn: Unit Code
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit Name'
+		dataType: string
+		lineageTag: be2335ac-a238-4b2e-a724-ce676bf6db44
+		summarizeBy: none
+		sourceColumn: Unit Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Name'
+		dataType: string
+		lineageTag: b60fde4a-365e-42f0-93e9-e3f64e1186ea
+		summarizeBy: none
+		sourceColumn: Emp Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Home Dept Code'
+		dataType: string
+		lineageTag: f0b18283-7c66-4999-b7de-4e740a6396a6
+		summarizeBy: none
+		sourceColumn: Emp Home Dept Code
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Status'
+		dataType: string
+		lineageTag: 37d36fe7-7f9b-4e44-a7a5-3592de5d92c1
+		summarizeBy: none
+		sourceColumn: Emp Status
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Title'
+		dataType: string
+		lineageTag: 4cd00f5f-194e-4cc6-affc-bb1281601f69
+		summarizeBy: none
+		sourceColumn: Emp Title
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Emp Home Dept Name'
+		dataType: string
+		lineageTag: f30fb5fc-0ce6-4e31-aec2-d6551a586430
+		summarizeBy: none
+		sourceColumn: Emp Home Dept Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Access to Proposal Package'
+		dataType: string
+		lineageTag: 351e8958-caf3-416b-90b2-66a7e4fd5514
+		summarizeBy: none
+		sourceColumn: Access to Proposal Package
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Central vs Campus'
+		dataType: string
+		lineageTag: d52c0666-c6de-4eac-a337-315930b4c964
+		summarizeBy: none
+		sourceColumn: Central vs Campus
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Extended Permission - Non-Loc 4-9ece486c-7409-4770-b44e-18ef393b1ece' = m
+		mode: import
+		queryGroup: 'For Sure Used'
+		source =
+				let
+				    Source = #"Extended Permission - All",
+				    #"Filtered Rows" = Table.SelectRows(Source, each ([Unit Type] <> "Global"))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_ResultType = Table
+

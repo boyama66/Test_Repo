@@ -1,0 +1,30 @@
+table 'Refresh Time'
+	lineageTag: 444eedc2-fc88-40e6-9bac-0fa4c39d69fa
+
+	measure Measure = "Data Refreshed: " & Max('Refresh Time'[dt_tm])
+		lineageTag: cf408ba8-f8bb-4a83-bdb9-d00df62288e0
+
+	column dt_tm
+		dataType: dateTime
+		isNullable: false
+		formatString: General Date
+		sourceProviderType: datetime
+		lineageTag: 94b85949-c261-4fc2-8999-9302e2dd8a74
+		summarizeBy: none
+		sourceColumn: dt_tm
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Refresh Time' = m
+		mode: directQuery
+		queryGroup: References
+		source =
+				let
+				    Source = Sql.Database("dbsqlcltora.resadmin.ucla.edu", "ORADW", [Query="select getdate() as dt_tm"])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "ORA Portal Proposal Viewers"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "afba1b7c-669b-43af-8905-e77ed799e636"
+  }
+}
